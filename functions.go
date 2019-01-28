@@ -72,7 +72,9 @@ func dialogItem(g *gocui.Gui, v *gocui.View) error {
 		l = ""
 	}
 	switch l {
-	case "关 闭":
+	case "Confirm":
+		fallthrough
+	case "Close":
 		if err := g.DeleteView("dialog"); err != nil {
 			return nil
 		}
@@ -102,8 +104,8 @@ func itemSelect(g *gocui.Gui, v *gocui.View) error {
 		v.Highlight = true
 		v.SelBgColor = gocui.ColorBlack
 		v.SelFgColor = gocui.ColorYellow
-		fmt.Fprintf(v, "%s\n", "确 认")
-		fmt.Fprintf(v, "%s\n", "关 闭")
+		fmt.Fprintf(v, "%s\n", "Confirm")
+		fmt.Fprintf(v, "%s\n", "Close")
 		if _, err := g.SetCurrentView("dialog"); err != nil {
 			return err
 		}

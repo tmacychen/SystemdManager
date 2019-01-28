@@ -46,7 +46,7 @@ func initKeyBind(g *gocui.Gui) {
 	}
 	if err := g.SetKeybinding("dialog", gocui.KeyArrowDown, gocui.ModNone,
 		func(g *gocui.Gui, v *gocui.View) error {
-			return cursorDown(g, v, 1)
+			return cursorDown(g, v, 2)
 		}); err != nil {
 		log.Panicln(err)
 	}

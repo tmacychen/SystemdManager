@@ -12,7 +12,7 @@ func layout(g *gocui.Gui) error {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
-		v.Title = "v1 (editable)"
+		v.Title = "Input Box"
 		v.Editable = true
 		v.Wrap = true
 
@@ -25,7 +25,7 @@ func layout(g *gocui.Gui) error {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
-		v.Title = "v2(debug)"
+		v.Title = "Units Logs"
 		v.Wrap = true
 		v.Autoscroll = true
 	}
@@ -33,7 +33,7 @@ func layout(g *gocui.Gui) error {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
-		v.Title = "v3"
+		v.Title = "Units Status"
 		v.Wrap = true
 		//v.Autoscroll = true
 		v.Highlight = true
@@ -49,7 +49,7 @@ func layout(g *gocui.Gui) error {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
-		v.Title = "v4 (test)"
+		v.Title = "Units Config"
 		v.Autoscroll = true
 		v.Wrap = true
 	}
