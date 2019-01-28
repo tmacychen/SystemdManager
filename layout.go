@@ -40,7 +40,7 @@ func layout(g *gocui.Gui) error {
 		v.SelBgColor = gocui.ColorBlack
 		v.SelFgColor = gocui.ColorYellow
 
-		for i := 0; i < 100; i++ {
+		for i := 0; i < 50; i++ {
 			fmt.Fprintf(v, "Item %v\n", i)
 		}
 

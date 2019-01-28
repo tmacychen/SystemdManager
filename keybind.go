@@ -26,9 +26,9 @@ func initKeyBind(g *gocui.Gui) {
 		log.Panicln(err)
 	}
 
-	if err := g.SetKeybinding("", gocui.KeyArrowDown, gocui.ModNone,
+	if err := g.SetKeybinding("v3", gocui.KeyArrowDown, gocui.ModNone,
 		func(g *gocui.Gui, v *gocui.View) error {
-			return cursorDown(g, v)
+			return cursorDown(g, v, 50)
 		}); err != nil {
 		log.Panicln(err)
 	}
@@ -41,6 +41,12 @@ func initKeyBind(g *gocui.Gui) {
 	if err := g.SetKeybinding("dialog", gocui.KeyEnter, gocui.ModNone,
 		func(g *gocui.Gui, v *gocui.View) error {
 			return dialogItem(g, v)
+		}); err != nil {
+		log.Panicln(err)
+	}
+	if err := g.SetKeybinding("dialog", gocui.KeyArrowDown, gocui.ModNone,
+		func(g *gocui.Gui, v *gocui.View) error {
+			return cursorDown(g, v, 1)
 		}); err != nil {
 		log.Panicln(err)
 	}
