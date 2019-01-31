@@ -18,7 +18,6 @@ func cursorDown(g *gocui.Gui, v *gocui.View, n int) error {
 		if err := v.SetCursor(cx, cy+1); err != nil {
 			ox, oy := v.Origin()
 			//显示最后项目后停止向下滚动
-			// TODO : 修改固定值100
 			if oy > n-cy-2 {
 				return nil
 			}
