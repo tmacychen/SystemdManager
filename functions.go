@@ -33,6 +33,7 @@ func cursorUp(g *gocui.Gui, v *gocui.View) error {
 	if v != nil {
 		ox, oy := v.Origin()
 		cx, cy := v.Cursor()
+		printfLog("O:(%v,%v),C:(%v,%v) \n", ox, oy, cx, cy)
 		if err := v.SetCursor(cx, cy-1); err != nil && oy > 0 {
 			if err := v.SetOrigin(ox, oy-1); err != nil {
 				return err
@@ -41,6 +42,46 @@ func cursorUp(g *gocui.Gui, v *gocui.View) error {
 	}
 	return nil
 }
+
+func PageUp(g *gocui.Gui, v *gocui.View) error {
+	_, maxY := g.Size()
+	if v != nil {
+		ox, oy := v.Origin()
+		cx, cy := v.Cursor()
+		printfLog("O:(%v,%v),C:(%v,%v) \n", ox, oy, cx, cy)
+		// 配置光标到第一行
+		if err := v.SetCursor(cx, 0); err != nil {
+			printfLog("%v\n", err)
+		}
+		// 向上滚动
+		if oy > 0 {
+			dy := oy - maxY*4/10 + 1
+			if dy < 0 {
+				dy = 0
+			}
+			if err := v.SetOrigin(ox, dy); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func PageDown(g *gocui.Gui, v *gocui.View) error {
+
+	return nil
+}
+
+func PageTop(g *gocui.Gui, v *gocui.View) error {
+
+	return nil
+}
+
+func PageBottom(g *gocui.Gui, v *gocui.View) error {
+
+	return nil
+}
+
 func nextView(g *gocui.Gui, v *gocui.View) error {
 
 	nextIndex := (active + 1) % len(viewArr)
@@ -78,7 +119,7 @@ func dialogItem(g *gocui.Gui, v *gocui.View) error {
 			return nil
 		}
 	}
-	if _, err = g.SetCurrentView("v3"); err != nil {
+	if _, err = g.SetCurrentView("v2"); err != nil {
 		return err
 	}
 	return nil

@@ -26,13 +26,19 @@ func initKeyBind(g *gocui.Gui) {
 		log.Panicln(err)
 	}
 
-	if err := g.SetKeybinding("v3", gocui.KeyArrowDown, gocui.ModNone,
+	if err := g.SetKeybinding("v2", gocui.KeyArrowDown, gocui.ModNone,
 		func(g *gocui.Gui, v *gocui.View) error {
-			return cursorDown(g, v, 50)
+			return cursorDown(g, v, UnitsNum)
 		}); err != nil {
 		log.Panicln(err)
 	}
-	if err := g.SetKeybinding("v3", gocui.KeyEnter, gocui.ModNone,
+	if err := g.SetKeybinding("v2", gocui.KeyPgup, gocui.ModNone,
+		func(g *gocui.Gui, v *gocui.View) error {
+			return PageUp(g, v)
+		}); err != nil {
+		log.Panicln(err)
+	}
+	if err := g.SetKeybinding("v2", gocui.KeyEnter, gocui.ModNone,
 		func(g *gocui.Gui, v *gocui.View) error {
 			return itemSelect(g, v)
 		}); err != nil {
