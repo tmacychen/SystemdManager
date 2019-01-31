@@ -20,6 +20,8 @@ func systemdUnits() []string {
 	for s.Scan() {
 		units = append(units, strings.Trim(s.Text(), " "))
 	}
+	//delete the last tow lines
+	units = units[:len(units)-2]
 
 	UnitsNum = len(units)
 	return units

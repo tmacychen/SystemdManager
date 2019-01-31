@@ -17,6 +17,7 @@ func cursorDown(g *gocui.Gui, v *gocui.View, n int) error {
 		}
 		if err := v.SetCursor(cx, cy+1); err != nil {
 			ox, oy := v.Origin()
+			printfLog("O:(%v,%v),C:(%v,%v) \n", ox, oy, cx, cy)
 			//显示最后项目后停止向下滚动
 			if oy > n-cy-2 {
 				return nil
@@ -44,8 +45,8 @@ func cursorUp(g *gocui.Gui, v *gocui.View) error {
 }
 
 func PageUp(g *gocui.Gui, v *gocui.View) error {
-	_, maxY := g.Size()
 	if v != nil {
+		_, maxY := g.Size()
 		ox, oy := v.Origin()
 		cx, cy := v.Cursor()
 		printfLog("O:(%v,%v),C:(%v,%v) \n", ox, oy, cx, cy)
@@ -67,18 +68,58 @@ func PageUp(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
-func PageDown(g *gocui.Gui, v *gocui.View) error {
+func PageDown(g *gocui.Gui, v *gocui.View, n int) error {
+	if v != nil {
+		_, maxY := g.Size()
+		cx, _ := v.Cursor()
+		ox, oy := v.Origin()
+		//		printfLog("O:(%v,%v),C:(%v,%v) \n", ox, oy, cx, cy)
+		dy := maxY*4/10 - 1
+		if dy+oy >= n {
+			if err := v.SetOrigin(ox, n-dy); err != nil {
+				return err
+			}
+			if err := v.SetCursor(cx, dy-1); err != nil {
+				return err
+			}
+		} else {
+			if err := v.SetOrigin(ox, dy+oy); err != nil {
+				return err
+			}
+		}
+	}
 
 	return nil
 }
 
-func PageTop(g *gocui.Gui, v *gocui.View) error {
-
+func PageHome(g *gocui.Gui, v *gocui.View) error {
+	if v != nil {
+		if err := v.SetOrigin(0, 0); err != nil {
+			return err
+		}
+		if err := v.SetCursor(0, 0); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
-func PageBottom(g *gocui.Gui, v *gocui.View) error {
+func PageEnd(g *gocui.Gui, v *gocui.View, n int) error {
 
+	if v != nil {
+		_, maxY := g.Size()
+		cy := maxY*4/10 - 2
+		oy := n - maxY*4/10 + 1
+		//		printfLog("cy %v,oy %v\n", cy, oy)
+		if err := v.SetOrigin(0, oy); err != nil {
+			//		printfLog("ori %v\n", err)
+			return err
+		}
+		if err := v.SetCursor(0, cy); err != nil {
+			//	printfLog("Cur %v\n", err)
+			return err
+		}
+	}
 	return nil
 }
 

@@ -38,6 +38,24 @@ func initKeyBind(g *gocui.Gui) {
 		}); err != nil {
 		log.Panicln(err)
 	}
+	if err := g.SetKeybinding("v2", gocui.KeyPgdn, gocui.ModNone,
+		func(g *gocui.Gui, v *gocui.View) error {
+			return PageDown(g, v, UnitsNum)
+		}); err != nil {
+		log.Panicln(err)
+	}
+	if err := g.SetKeybinding("v2", gocui.KeyHome, gocui.ModNone,
+		func(g *gocui.Gui, v *gocui.View) error {
+			return PageHome(g, v)
+		}); err != nil {
+		log.Panicln(err)
+	}
+	if err := g.SetKeybinding("v2", gocui.KeyEnd, gocui.ModNone,
+		func(g *gocui.Gui, v *gocui.View) error {
+			return PageEnd(g, v, UnitsNum)
+		}); err != nil {
+		log.Panicln(err)
+	}
 	if err := g.SetKeybinding("v2", gocui.KeyEnter, gocui.ModNone,
 		func(g *gocui.Gui, v *gocui.View) error {
 			return itemSelect(g, v)
