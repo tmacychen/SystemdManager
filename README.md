@@ -1,4 +1,4 @@
 # SystemdManager
 
-a systemd-manager's  terminal UI 
+a systemd-manager in terminal UI 
 
