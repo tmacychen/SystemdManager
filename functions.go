@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/jroimartin/gocui"
 )
@@ -144,6 +145,9 @@ func nextView(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
+// Item is the selected item
+var Item string
+
 func dialogItem(g *gocui.Gui, v *gocui.View) error {
 	var l string
 	var err error
@@ -153,12 +157,25 @@ func dialogItem(g *gocui.Gui, v *gocui.View) error {
 		l = ""
 	}
 	switch l {
-	case "Confirm":
-		fallthrough
-	case "Close":
-		if err := g.DeleteView("dialog"); err != nil {
-			return nil
+	case "Status":
+		getServiceStatus(Item)
+		v, err := g.View("v4")
+		if err != nil {
+			printfLog("%v\n", err)
+			return err
 		}
+		v.Clear()
+		fmt.Fprintf(v, "%v\n", getServiceFiles(Item))
+		goto Delete
+	case "Start or Restart":
+		goto Delete
+	case "Stop":
+		goto Delete
+	case "Close":
+	}
+Delete:
+	if err := g.DeleteView("dialog"); err != nil {
+		return nil
 	}
 	if _, err = g.SetCurrentView("v2"); err != nil {
 		return err
@@ -174,7 +191,8 @@ func itemSelect(g *gocui.Gui, v *gocui.View) error {
 	if l, err = v.Line(cy); err != nil {
 		l = ""
 	}
-	printfLog("get %v\n", l)
+	printfLog("%v\n", strings.Split(l, " ")[0])
+	Item = strings.Split(l, " ")[0]
 	maxX, maxY := g.Size()
 	if v, err := g.SetView("dialog", maxX/2-30, maxY/2, maxX/2+30, maxY/2+5); err != nil {
 		if err != gocui.ErrUnknownView {
@@ -185,7 +203,9 @@ func itemSelect(g *gocui.Gui, v *gocui.View) error {
 		v.Highlight = true
 		v.SelBgColor = gocui.ColorBlack
 		v.SelFgColor = gocui.ColorYellow
-		fmt.Fprintf(v, "%s\n", "Confirm")
+		fmt.Fprintf(v, "%s\n", "Status")
+		fmt.Fprintf(v, "%s\n", "Start or Restart")
+		fmt.Fprintf(v, "%s\n", "Stop")
 		fmt.Fprintf(v, "%s\n", "Close")
 		if _, err := g.SetCurrentView("dialog"); err != nil {
 			return err

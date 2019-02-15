@@ -10,3 +10,7 @@ func Test_systemdUnits(t *testing.T) {
 		fmt.Printf("%v\n", i)
 	}
 }
+
+func Test_getUnitsFile(t *testing.T) {
+	getServiceFiles("sshd.service")
+}

@@ -30,9 +30,8 @@ func layout(g *gocui.Gui) error {
 		v.Highlight = true
 		v.SelBgColor = gocui.ColorBlack
 		v.SelFgColor = gocui.ColorYellow
-		// TODO : 增加systemd units 条目
 		for _, i := range systemdUnits() {
-			//显示固定长度，补全空格
+			//show service's status  in fix width
 			fmt.Fprintf(v, "%s%*s\n", i.Name, maxX/2-len(i.Name), i.ActiveState)
 		}
 	}
@@ -49,14 +48,16 @@ func layout(g *gocui.Gui) error {
 			return err
 		}
 		v.Title = "Units Config"
-		v.Autoscroll = true
 		v.Wrap = true
+		v.Highlight = true
+		v.Editable = true
 	}
 	if v, err := g.SetView("v5", 0, maxY*9/10, maxX-1, maxY-1); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
 		v.Title = "Keyboard shortcut Help"
+		v.Autoscroll = true
 		v.Wrap = true
 		fmt.Fprintln(v, "Tab: Switch between the panels")
 	}
