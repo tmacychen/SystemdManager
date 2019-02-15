@@ -32,7 +32,8 @@ func layout(g *gocui.Gui) error {
 		v.SelFgColor = gocui.ColorYellow
 		// TODO : 增加systemd units 条目
 		for _, i := range systemdUnits() {
-			fmt.Fprintf(v, "%v\n", i)
+			//显示固定长度，补全空格
+			fmt.Fprintf(v, "%s%*s\n", i.Name, maxX/2-len(i.Name), i.ActiveState)
 		}
 	}
 	if v, err := g.SetView("v3", 0, maxY/2, maxX/2-1, maxY*9/10-1); err != nil {

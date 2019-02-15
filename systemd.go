@@ -6,7 +6,7 @@ import (
 
 var UnitsNum int
 
-func systemdUnits() []string {
+func systemdUnits() []dbus.UnitStatus {
 	c, err := dbus.New()
 	if err != nil {
 		printfLog("%v\n", err)
@@ -16,12 +16,7 @@ func systemdUnits() []string {
 	if err != nil {
 		printfLog("%v\n", err)
 	}
-	unitNames := []string{}
-	for _, u := range units {
-		unitNames = append(unitNames, u.Name)
-	}
 
 	UnitsNum = len(units)
-	printfLog("num :%v\nunitNmaes :%v\n", UnitsNum, unitNames)
-	return unitNames
+	return units
 }
