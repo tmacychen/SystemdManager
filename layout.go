@@ -57,7 +57,7 @@ func layout(g *gocui.Gui) error {
 		}
 		v.Title = "Keyboard shortcut Help"
 		v.Wrap = true
-		fmt.Fprintln(v, "Tab: Switch between panels")
+		fmt.Fprintln(v, "Tab: Switch between the panels")
 	}
 	return nil
 }

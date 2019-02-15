@@ -1,28 +1,27 @@
 package main
 
 import (
-	"bufio"
-	"bytes"
-	"os/exec"
-	"strings"
+	"github.com/coreos/go-systemd/dbus"
 )
 
 var UnitsNum int
 
 func systemdUnits() []string {
-
-	units := []string{}
-	out, err := exec.Command("systemctl", "list-unit-files", "--no-pager").Output()
+	c, err := dbus.New()
 	if err != nil {
 		printfLog("%v\n", err)
 	}
-	s := bufio.NewScanner(bytes.NewReader(out))
-	for s.Scan() {
-		units = append(units, strings.Trim(s.Text(), " "))
+
+	units, err := c.ListUnitsByPatterns(nil, []string{"*.service"})
+	if err != nil {
+		printfLog("%v\n", err)
 	}
-	//delete the last tow lines
-	units = units[:len(units)-2]
+	unitNames := []string{}
+	for _, u := range units {
+		unitNames = append(unitNames, u.Name)
+	}
 
 	UnitsNum = len(units)
-	return units
+	printfLog("num :%v\nunitNmaes :%v\n", UnitsNum, unitNames)
+	return unitNames
 }
