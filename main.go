@@ -7,8 +7,9 @@ import (
 )
 
 var (
-	active  = 0
-	viewArr = []string{"v1", "v2", "v3", "v4"}
+	active   = 0
+	viewArr  = []string{"v1", "v2", "v3", "v4"}
+	itemChan = make(chan string)
 )
 
 func init() {
@@ -29,8 +30,11 @@ func main() {
 	g.SetManagerFunc(layout)
 
 	initKeyBind(g)
+	done := make(chan struct{})
+	go journalDaemon(g, done)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)
 	}
+	defer close(done)
 }

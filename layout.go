@@ -32,7 +32,12 @@ func layout(g *gocui.Gui) error {
 		v.SelFgColor = gocui.ColorYellow
 		for _, i := range systemdUnits() {
 			//show service's status  in fix width
-			fmt.Fprintf(v, "%s%*s\n", i.Name, maxX/2-len(i.Name), i.ActiveState)
+			blank := maxX*7/8 - len(i.Name)
+			// fix that there is no spacee between the unit's name and status
+			if blank <= 5 {
+				blank = maxX
+			}
+			fmt.Fprintf(v, "%s%*s\n", i.Name, blank, i.ActiveState)
 		}
 	}
 	if v, err := g.SetView("v3", 0, maxY/2, maxX/2-1, maxY*9/10-1); err != nil {

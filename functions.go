@@ -158,11 +158,10 @@ func dialogItem(g *gocui.Gui, v *gocui.View) error {
 	}
 	switch l {
 	case "Status":
-		getServiceStatus(Item)
+		itemChan <- Item
 		v, err := g.View("v4")
 		if err != nil {
 			printfLog("%v\n", err)
-			return err
 		}
 		v.Clear()
 		fmt.Fprintf(v, "%v\n", getServiceFiles(Item))
@@ -175,7 +174,7 @@ func dialogItem(g *gocui.Gui, v *gocui.View) error {
 	}
 Delete:
 	if err := g.DeleteView("dialog"); err != nil {
-		return nil
+		return err
 	}
 	if _, err = g.SetCurrentView("v2"); err != nil {
 		return err
