@@ -3,3 +3,4 @@ all: *.go
 
 clean: SystemdManager
 	rm SystemdManager
+	rm log

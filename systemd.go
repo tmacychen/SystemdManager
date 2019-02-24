@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"io/ioutil"
 
 	"github.com/coreos/go-systemd/dbus"
@@ -27,25 +28,42 @@ func systemdUnits() []dbus.UnitStatus {
 }
 
 func journalDaemon(g *gocui.Gui, done <-chan struct{}) {
-	subDone := make(chan struct{}, 1)
+	printfLog("journal Daemon  start \n")
 	isSubRun := false
+	doneChan := make(chan struct{}, 1)
 	for {
+
 		select {
 		case <-done:
+			printfLog("Journal daemon done\n")
 			return
 		default:
 			i := <-itemChan
-			printfLog("%v\n", i)
+			printfLog("Get Item :%v\n", i)
+			//timer.Reset(time.Duration(200) * time.Microsecond)
 			if i != "" && isSubRun {
-				subDone <- struct{}{}
+				isSubRun = false
+				doneChan <- struct{}{}
+				printfLog("stop the old routine\n")
 			}
-			go getServiceStatus(g, i, subDone)
+			printfLog("start to show status \n")
+			// get  unit's log
+			//go getServiceStatus(g, i, timer)
+			printfLog("sub routine is run \n")
+			go getServiceStatus(g, i, doneChan)
 			isSubRun = true
 		}
 	}
 
 }
-func getServiceStatus(g *gocui.Gui, unit string, done chan struct{}) {
+func getServiceStatus(g *gocui.Gui, unit string, done chan struct{}) error {
+	v, err := g.View("v3")
+	if err != nil {
+		printfLog("get view of v3 error:%v\n", err)
+		return err
+	}
+	v.Clear()
+	printfLog("v3 clear and tht unit is %v\n", unit)
 	journalReader, err := sdjournal.NewJournalReader(sdjournal.JournalReaderConfig{
 		NumFromTail: 10,
 		Matches: []sdjournal.Match{
@@ -57,26 +75,37 @@ func getServiceStatus(g *gocui.Gui, unit string, done chan struct{}) {
 	})
 	if err != nil {
 		printfLog("error open journal %v\n", err)
+		return err
 	}
 	if journalReader == nil {
 		printfLog("got nil journal reader ! item :%v\n", Item)
+		return nil
 	}
 	defer journalReader.Close()
-	v, err := g.View("v3")
-	if err != nil {
-		printfLog("get view of v4 error:%v\n", err)
-	}
-	v.Clear()
+
+	buffer := make([]byte, 64*(1<<10))
+keepGoing:
 	for {
+		c, err := journalReader.Read(buffer)
+		if err != nil && err != io.EOF {
+			printfLog("journalReader err:%v\n", err)
+			return err
+		}
 		select {
 		case <-done:
-			return
+			printfLog("read sub done!")
+			return nil
 		default:
-			if err := journalReader.Follow(nil, v); err != sdjournal.ErrExpired {
-				printfLog("follow err :%v\n", err)
+			if c > 0 {
+				g.Update(func(g *gocui.Gui) error {
+					_, err := v.Write(buffer[:c])
+					return err
+				})
+				continue keepGoing
 			}
 		}
 	}
+
 }
 func getServiceFiles(unit string) string {
 	if unit == "" {
@@ -85,23 +114,26 @@ func getServiceFiles(unit string) string {
 	c, err := dbus.New()
 	if err != nil {
 		printfLog("%v\n", err)
+		return ""
 	}
 
 	defer c.Close()
 	m, err := c.GetUnitProperties(unit)
 	if err != nil {
-		printfLog("%v\n", err)
+		printfLog("get unitProperties Error :%v\n", err)
+		return ""
 	}
 	var realPath string
 	path := m["FragmentPath"]
 	if path == nil {
-		return ""
+		return "config file does not found!"
+
 	}
 	realPath = path.(string)
 	fc, err := ioutil.ReadFile(realPath)
 	if err != nil {
-		printfLog("%v\n", err)
-		return ""
+		printfLog("iounil %v\n", err)
+		return "config file read error"
 	}
 
 	return string(fc)
