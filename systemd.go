@@ -3,6 +3,7 @@ package main
 import (
 	"io"
 	"io/ioutil"
+	"time"
 
 	"github.com/coreos/go-systemd/dbus"
 	"github.com/coreos/go-systemd/sdjournal"
@@ -32,13 +33,11 @@ func journalDaemon(g *gocui.Gui, done <-chan struct{}) {
 	isSubRun := false
 	doneChan := make(chan struct{}, 1)
 	for {
-
 		select {
 		case <-done:
 			printfLog("Journal daemon done\n")
 			return
-		default:
-			i := <-itemChan
+		case i := <-itemChan:
 			printfLog("Get Item :%v\n", i)
 			//timer.Reset(time.Duration(200) * time.Microsecond)
 			if i != "" && isSubRun {
@@ -84,26 +83,25 @@ func getServiceStatus(g *gocui.Gui, unit string, done chan struct{}) error {
 	defer journalReader.Close()
 
 	buffer := make([]byte, 64*(1<<10))
-keepGoing:
 	for {
-		c, err := journalReader.Read(buffer)
-		if err != nil && err != io.EOF {
-			printfLog("journalReader err:%v\n", err)
-			return err
-		}
 		select {
 		case <-done:
-			printfLog("read sub done!")
+			printfLog("read sub done!\n")
 			return nil
-		default:
+		case <-time.After(time.Duration(100) * time.Millisecond):
+			c, err := journalReader.Read(buffer)
+			if err != nil && err != io.EOF {
+				printfLog("journalReader err:%v\n", err)
+				return err
+			}
 			if c > 0 {
 				g.Update(func(g *gocui.Gui) error {
 					_, err := v.Write(buffer[:c])
 					return err
 				})
-				continue keepGoing
 			}
 		}
+
 	}
 
 }
